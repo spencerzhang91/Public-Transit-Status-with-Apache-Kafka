@@ -38,7 +38,7 @@ class Station(Producer):
         # replicas
         #
         #
-        topic_name = f"Station.Message.{station_name}" # TODO: Come up with a better topic name
+        topic_name = f"Message.Station.{station_name}" # TODO: Come up with a better topic name
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
