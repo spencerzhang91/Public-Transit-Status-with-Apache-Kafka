@@ -188,7 +188,7 @@ Once docker-compose is ready, the following services will be available:
 
 Note that to access these services from your own machine, you will always use the `Host URL` column.
 
-When configuring services that run within Docker Compose, like **Kafka Connect you must use the Docker URL**. When you configure the JDBC Source Kafka Connector, for example, you will want to use the value from the `Docker URL` column.
+When configuring services that run **within Docker Compose**, like **Kafka Connect you must use the Docker URL**. When you configure the JDBC Source Kafka Connector, for example, you will want to use the value from the `Docker URL` column.
 
 ### Running the Simulation
 
