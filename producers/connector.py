@@ -38,21 +38,14 @@ def configure_connector():
                "value.converter": "org.apache.kafka.connect.json.JsonConverter",
                "value.converter.schemas.enable": "false",
                "batch.max.rows": "500",
-               # TODO
+               # TODO: Finish the following
                "connection.url": "jdbc:postgresql://localhost:5432/cta",
-               # TODO
                "connection.user": "cta_admin",
-               # TODO
                "connection.password": "chicago",
-               # TODO
                "table.whitelist": "stations",
-               # TODO
                "mode": "incrementing",
-               # TODO
                "incrementing.column.name": "",
-               # TODO
                "topic.prefix": "psql-",
-               # TODO
                "poll.interval.ms": "10000",
            }
        }),
