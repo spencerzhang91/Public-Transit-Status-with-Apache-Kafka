@@ -78,7 +78,7 @@ class Producer:
 
         # Create a NewTopic object. Don't forget to set partitions and replication factor to 1!
         #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.NewTopic
-        topic = NewTopic(self.topic_name, num_partitions=sellf.num_partitions, replication_factor=self.num_replicas)
+        topic = NewTopic(self.topic_name, num_partitions=self.num_partitions, replication_factor=self.num_replicas)
 
         # Using `client`, create the topic
         #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.AdminClient.create_topics
