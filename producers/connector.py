@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 KAFKA_CONNECT_URL = "http://kafka-connect:8083"
-CONNECTOR_NAME = "stations"
+CONNECTOR_NAME = "CONNECTOR_STATIONS"
 
 def configure_connector():
     """Starts and configures the Kafka Connect connector"""
@@ -45,7 +45,7 @@ def configure_connector():
                "table.whitelist": "stations",
                "mode": "incrementing",
                "incrementing.column.name": "stop_id",
-               "topic.prefix": "connect-",
+               "topic.prefix": "connect->",
                "poll.interval.ms": "10000",
            }
        }),
