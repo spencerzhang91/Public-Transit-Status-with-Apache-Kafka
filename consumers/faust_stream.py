@@ -32,26 +32,54 @@ class TransformedStation(faust.Record):
 # TODO: Define a Faust Stream that ingests data from the Kafka Connect stations topic and
 #   places it into a new topic with only the necessary information.
 app = faust.App("stations-stream", broker="kafka://localhost:9092", store="memory://")
+
 # TODO: Define the input Kafka Topic. Hint: What topic did Kafka Connect output to?
-topic = app.topic("TODO", value_type=Station)
+topic = app.topic(
+    "connect.psql.01.stations",
+    value_type=Station,
+    partitions=1)
+
 # TODO: Define the output Kafka Topic
-out_topic = app.topic("TODO", partitions=1)
+out_topic = app.topic(
+    "connect.psql.01.stations.sanitized",
+    value_type=TransformedStation,
+    partitions=1)
+
+
 # TODO: Define a Faust Table
 table = app.Table(
-   # "TODO",
-   # default=TODO,
+   "stations_summary",
+   default=int,  # <-- not sure if it is correct.
    partitions=1,
    changelog_topic=out_topic,
 )
 
 
-#
-#
 # TODO: Using Faust, transform input `Station` records into `TransformedStation` records. Note that
 # "line" is the color of the station. So if the `Station` record has the field `red` set to true,
 # then you would set the `line` of the `TransformedStation` record to the string `"red"`
 #
 #
+@app.agent(topic)
+async def station_event(incoming_events):
+    async for event in incoming_events:
+        sanitized = TransformedStation(
+            station_id = event.station_id,
+            station_name = event.station_name,
+            order = event.order,
+            line = decide_color(event.color)
+        )
+        await out_topic.send(value=sanitized)
+
+
+def decide_color(event):
+    assert isinstance(event, Station), "Incoming event from connector is not <Station> type."
+    if event.red:
+        return "red"
+    elif event.blue:
+        return "blue"
+    elif event.green:
+        return "green"
 
 
 if __name__ == "__main__":
