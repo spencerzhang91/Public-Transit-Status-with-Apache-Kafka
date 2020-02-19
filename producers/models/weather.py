@@ -79,7 +79,7 @@ class Weather(Producer):
         # specify the Avro schemas and verify that you are using the correct Content-Type header.
         #
         #
-        logger.info("weather kafka proxy integration incomplete - skipping")
+        # logger.info("weather kafka proxy integration incomplete - skipping")
         resp = requests.post(
            #
            #
