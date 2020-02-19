@@ -44,7 +44,7 @@ def configure_connector():
                "connection.password": "chicago",
                "table.whitelist": "stations",
                "mode": "incrementing",
-               "incrementing.column.name": "",
+               "incrementing.column.name": "stop_id",
                "topic.prefix": "stations.",
                "poll.interval.ms": "10000",
            }
