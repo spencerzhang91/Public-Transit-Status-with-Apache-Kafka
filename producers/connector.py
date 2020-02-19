@@ -57,4 +57,5 @@ def configure_connector():
 
 
 if __name__ == "__main__":
+    KAFKA_CONNECT_URL = "http://localhost:8083"
     configure_connector()
