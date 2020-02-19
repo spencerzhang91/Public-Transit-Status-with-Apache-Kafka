@@ -39,12 +39,12 @@ class Producer:
             "landoop_kafka_connect_ui": "http://localhost:8084",
             "landoop_kafka_topics_ui": "http://localhost:8085",
             "landoop_schema_registry_ui": "http://localhost:8086",
-            "kafka": "PLAINTEXT://kafka0:9092",
+            "kafka": "PLAINTEXT://localhost:9092",
             "rest_proxy": "http://localhost:8082",
             "schema_registry": "http://localhost:8081",
-            "kafka_connect": "http://kafka-connect:8083",
+            "kafka_connect": "http://localhost:8083",
             "ksql": "http://localhost:8088",
-            "postgresql": "jdbc:postgresql://postgres:5432/cta"
+            "postgresql": "jdbc:postgresql://localhost:5432/cta"
         }
 
         # If the topic does not already exist, try to create it
