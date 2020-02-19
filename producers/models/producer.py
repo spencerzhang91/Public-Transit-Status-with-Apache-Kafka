@@ -46,9 +46,9 @@ class Producer:
             ],
             "rest_proxy": "http://localhost:8082",
             "schema_registry": "http://localhost:8081",
-            "kafka_connect": "http://localhost:8083",
+            "kafka_connect": "http://kafka-connect:8083",
             "ksql": "http://localhost:8088",
-            "postgresql": "jdbc:postgresql://localhost:5432/cta"
+            "postgresql": "jdbc:postgresql://postgres:5432/cta"
         }
 
         # If the topic does not already exist, try to create it
