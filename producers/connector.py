@@ -45,7 +45,7 @@ def configure_connector():
                "table.whitelist": "stations",
                "mode": "incrementing",
                "incrementing.column.name": "",
-               "topic.prefix": "psql-",
+               "topic.prefix": "stations.",
                "poll.interval.ms": "10000",
            }
        }),
