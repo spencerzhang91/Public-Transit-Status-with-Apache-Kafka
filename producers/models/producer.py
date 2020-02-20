@@ -107,10 +107,3 @@ class Producer:
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""
         return int(round(time.time() * 1000))
-
-
-
-if __name__ == "__main__":
-
-    test_schema = {}
-    test_producer = Producer("test_topic", test_schema)
