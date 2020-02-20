@@ -39,7 +39,7 @@ class Producer:
             "landoop_kafka_connect_ui": "http://localhost:8084",
             "landoop_kafka_topics_ui": "http://localhost:8085",
             "landoop_schema_registry_ui": "http://localhost:8086",
-            "kafka": ["PLAINTEXT://localhost:9092", "PLAINTEXT://localhost:9092", "PLAINTEXT://localhost:9094"],
+            "kafka": "PLAINTEXT://localhost:9092, PLAINTEXT://localhost:9092, PLAINTEXT://localhost:9094",
             "rest_proxy": "http://localhost:8082",
             "schema_registry": "http://localhost:8081",
             "kafka_connect": "http://kafka-connect:8083",
