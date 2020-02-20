@@ -2,7 +2,7 @@
 import logging
 
 import confluent_kafka
-from confluent_kafka import Consumer
+from confluent_kafka import Consumer, OFFSET_BEGINNING
 from confluent_kafka.avro import AvroConsumer
 from confluent_kafka.avro.serializer import SerializerError
 from tornado import gen
@@ -37,18 +37,37 @@ class KafkaConsumer:
         #
         #
         self.broker_properties = {
-                #
-                # TODO
-                #
+            "public_transit_status": "http://localhost:8888",
+            "landoop_kafka_connect_ui": "http://localhost:8084",
+            "landoop_kafka_topics_ui": "http://localhost:8085",
+            "landoop_schema_registry_ui": "http://localhost:8086",
+            "kafka": ["PLAINTEXT://localhost:9092", "PLAINTEXT://localhost:9092", "PLAINTEXT://localhost:9094"],
+            "rest_proxy": "http://localhost:8082",
+            "schema_registry": "http://localhost:8081",
+            "kafka_connect": "http://kafka-connect:8083",
+            "ksql": "http://localhost:8088",
+            "postgresql": "jdbc:postgresql://localhost:5432/cta"
         }
 
         # TODO: Create the Consumer, using the appropriate type.
         if is_avro is True:
-            self.broker_properties["schema.registry.url"] = "http://localhost:8081"
-            #self.consumer = AvroConsumer(...)
+            self.broker_properties["schema_registry"] = "http://localhost:8081"
+            self.consumer = AvroConsumer(
+                {
+                    "bootstrap.servers": self.broker_properties["kafka"],
+                    "auto.offset.reset": "earliest",
+                    "group.id": "group.consumer.avro",
+                    "schema.registry.url": self.broker_properties["shema_registry"]
+                }
+            )
         else:
-            #self.consumer = Consumer(...)
-            pass
+            self.consumer = Consumer(
+                {
+                    "bootstrap.servers": self.broker_properties["kafka"],
+                    "auto.offset.reset": "earliest",
+                    "group.id": "group.consumer",
+                }
+            )
 
         #
         #
@@ -56,23 +75,18 @@ class KafkaConsumer:
         # how the `on_assign` callback should be invoked.
         #
         #
-        # self.consumer.subscribe( TODO )
+        self.consumer.subscribe([self.topic_name_pattern], on_assign=self.on_assign)
 
     def on_assign(self, consumer, partitions):
         """Callback for when topic assignment takes place"""
         # TODO: If the topic is configured to use `offset_earliest` set the partition offset to
         # the beginning or earliest
-        logger.info("on_assign is incomplete - skipping")
+        # logger.info("on_assign is incomplete - skipping")
         for partition in partitions:
-            pass
-            #
-            #
-            # TODO
-            #
-            #
-
-        logger.info("partitions assigned for %s", self.topic_name_pattern)
+            partition.offset = OFFSET_BEGINNING
+        
         consumer.assign(partitions)
+        logger.info("partitions assigned for %s", self.topic_name_pattern)
 
     async def consume(self):
         """Asynchronously consumes data from kafka topic"""
@@ -91,8 +105,15 @@ class KafkaConsumer:
         # is retrieved.
         #
         #
-        logger.info("_consume is incomplete - skipping")
-        return 0
+        # logger.info("_consume is incomplete - skipping")
+        try:
+            message = self.consumer.poll()
+        except RuntimeError as e:
+            print(f"Error occured! \n{e}\n")
+        if not message:
+            return 0
+        else:
+            return 1
 
 
     def close(self):
@@ -102,3 +123,4 @@ class KafkaConsumer:
         # TODO: Cleanup the kafka consumer
         #
         #
+        self.consumer.close()
