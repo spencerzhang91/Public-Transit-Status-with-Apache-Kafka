@@ -21,7 +21,7 @@
         },
         {
             "name": "train_status",
-            "type": "string"
+            "type": "boolean"
         },
         {
             "name": "prev_station_id",
