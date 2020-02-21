@@ -64,6 +64,11 @@ class Station(Producer):
         #
         #
         # logger.info("arrival kafka integration incomplete - skipping")
+
+        # print(f"train: {train}")
+        # print(f"direction: {direction}")
+        
+
         self.producer.produce(
            topic=self.topic_name,
            key={"timestamp": self.time_millis()}, # <-- BUG: forget the schema for value!
@@ -75,7 +80,7 @@ class Station(Producer):
                "line": self.color,
                "train_status": train.broken(),  # <- there seems no such an information?
                "prev_station_id": prev_station_id,
-               "prev_direction": prev_direction
+               "prev_direction": 1  # <- New bug location
            },
         )
 
@@ -99,6 +104,8 @@ class Station(Producer):
 
     def arrive_b(self, train, prev_station_id, prev_direction):
         """Denotes a train arrival at this station in the 'b' direction"""
+        print(f"prev_station_id: {prev_station_id}")
+        print(f"prev_direction: {prev_direction}")
         self.b_train = train
         self.run(train, "b", prev_station_id, prev_direction)
 

@@ -60,7 +60,7 @@ class Producer:
             },
             default_key_schema=self.key_schema,
             default_value_schema=self.value_schema,
-            schema_registry=self.broker_properties["schema_registry"]
+            schema_registry=self.broker_properties["schema_registry"]  # <-- current bug is here!
         )
 
 
