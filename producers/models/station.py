@@ -66,14 +66,14 @@ class Station(Producer):
         # logger.info("arrival kafka integration incomplete - skipping")
         self.producer.produce(
            topic=self.topic_name,
-           key={"timestamp": self.time_millis()},
+           key={"timestamp": self.time_millis()}, # <-- BUG: forget the schema for value!
            value={
                # TODO: Configure this
                "station_id": self.station_id,
                "train_id": train,
                "direction": direction,
                "line": self.color,
-               "train_status": "?",  # <- there seems no such an information?
+               "train_status": train.broken(),  # <- there seems no such an information?
                "prev_station_id": prev_station_id,
                "prev_direction": prev_direction
            },
@@ -106,4 +106,6 @@ class Station(Producer):
         """Prepares the producer for exit by cleaning up the producer"""
         self.turnstile.close()
         super(Station, self).close()
+
+
 
