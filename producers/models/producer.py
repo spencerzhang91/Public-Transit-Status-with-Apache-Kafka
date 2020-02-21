@@ -58,6 +58,8 @@ class Producer:
                 "bootstrap.servers": self.broker_properties["kafka"],
                 "compression.type": "lz4"
             },
+            default_key_schema=self.key_schema,
+            default_value_schema=self.value_schema,
             schema_registry=self.broker_properties["schema_registry"]
         )
 
