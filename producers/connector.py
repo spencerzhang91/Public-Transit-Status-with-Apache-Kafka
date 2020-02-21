@@ -8,7 +8,7 @@ import requests
 logger = logging.getLogger(__name__)
 
 
-KAFKA_CONNECT_URL = "http://kafka-connect:8083"
+KAFKA_CONNECT_URL = "http://localhost:8083"
 CONNECTOR_NAME = "CONNECTOR_STATIONS"
 
 def configure_connector():
@@ -27,7 +27,7 @@ def configure_connector():
     # Connect should run this connector (hint: not very often!)
     logger.info("connector code not completed skipping connector creation")
     resp = requests.post(
-       KAFKA_CONNECT_URL,
+       KAFKA_CONNECT_URL + "/connectors",
        headers={"Content-Type": "application/json"},
        data=json.dumps({
            "name": CONNECTOR_NAME,
@@ -57,5 +57,5 @@ def configure_connector():
 
 
 if __name__ == "__main__":
-    KAFKA_CONNECT_URL = "http://localhost:8083"
+
     configure_connector()
