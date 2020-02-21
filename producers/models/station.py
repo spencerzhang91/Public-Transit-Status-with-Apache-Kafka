@@ -4,7 +4,7 @@ from pathlib import Path
 
 from confluent_kafka import avro
 
-from models.turnstile import Turnstile
+from models import Turnstile
 from models.producer import Producer
 
 
@@ -80,8 +80,10 @@ class Station(Producer):
                "line": self.color,
                "train_status": train.broken(),  # <- there seems no such an information?
                "prev_station_id": prev_station_id,
-               "prev_direction": 1  # <- New bug location
+               "prev_direction": prev_direction
            },
+           key_schema=self.key_schema,
+           value_schema=self.value_schema
         )
 
     def __str__(self):

@@ -5,7 +5,7 @@ import time
 
 from confluent_kafka import avro
 from confluent_kafka.admin import AdminClient, NewTopic
-from confluent_kafka.avro import AvroProducer
+from confluent_kafka.avro import AvroProducer, CachedSchemaRegistryClient
 
 logger = logging.getLogger(__name__)
 
@@ -56,12 +56,14 @@ class Producer:
         self.producer = AvroProducer(
             {
                 "bootstrap.servers": self.broker_properties["kafka"],
-                "schema.registry.url": self.broker_properties["schema_registry"],
-                "compression.type": "lz4"
+                # "schema.registry.url": self.broker_properties["schema_registry"],
+                # "compression.type": "lz4"
             },
             default_key_schema=self.key_schema,
             default_value_schema=self.value_schema,
-            # schema_registry=self.broker_properties["schema_registry"]  # <-- bug is here!
+            schema_registry=CachedSchemaRegistryClient(
+                {"url": self.broker_properties["schema_registry"]}
+              )  # <-- bug is here!
         )
 
         # About the bug above: Be careful that if to specify the schema registry, it could be done
