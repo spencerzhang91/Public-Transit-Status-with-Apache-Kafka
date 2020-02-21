@@ -56,12 +56,18 @@ class Producer:
         self.producer = AvroProducer(
             {
                 "bootstrap.servers": self.broker_properties["kafka"],
+                "schema.registry.url": self.broker_properties["schema_registry"],
                 "compression.type": "lz4"
             },
             default_key_schema=self.key_schema,
             default_value_schema=self.value_schema,
-            schema_registry=self.broker_properties["schema_registry"]  # <-- current bug is here!
+            # schema_registry=self.broker_properties["schema_registry"]  # <-- bug is here!
         )
+
+        # About the bug above: Be careful that if to specify the schema registry, it could be done
+        # in two ways:
+        # 1. Configure it in the config json (first param of AvroProducer class)
+        # 2. Use a CachedSchemaRegistryClient class like in exercise3.4.py
 
 
     def create_topic(self):
