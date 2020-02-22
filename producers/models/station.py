@@ -64,27 +64,26 @@ class Station(Producer):
         #
         #
         # logger.info("arrival kafka integration incomplete - skipping")
-
-        # print(f"train: {train}")
-        # print(f"direction: {direction}")
-        
-
-        self.producer.produce(
-           topic=self.topic_name,
-           key={"timestamp": self.time_millis()}, # <-- BUG: forget the schema for value!
-           value={
-               # TODO: Configure this
-               "station_id": self.station_id,
-               "train_id": train.train_id,
-               "direction": direction,
-               "line": self.color,
-               "train_status": train.broken(),  # <- there seems no such an information?
-               "prev_station_id": prev_station_id,
-               "prev_direction": prev_direction
-           },
-           key_schema=self.key_schema,
-           value_schema=self.value_schema
-        )
+        try:
+            self.producer.produce(
+            topic=self.topic_name,
+            key={"timestamp": self.time_millis()}, # <-- BUG: forget the schema for value!
+            value={
+                # TODO: Configure this
+                "station_id": self.station_id,
+                "train_id": train.train_id,
+                "direction": direction,
+                "line": self.color.name,
+                "train_status": train.status.name,  # <- there seems no such an information?
+                "prev_station_id": prev_station_id,
+                "prev_direction": prev_direction
+            },
+            key_schema=self.key_schema,
+            value_schema=self.value_schema
+            )
+        except Exception as e:
+            logger.fatal(e)
+            raise e
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(
