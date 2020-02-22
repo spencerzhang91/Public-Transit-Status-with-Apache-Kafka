@@ -14,8 +14,8 @@ import pandas as pd
 logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
 
 from connector import configure_connector
-from models.line import Line
-from models.weather import Weather
+from models import Line
+from models import Weather
 
 
 logger = logging.getLogger(__name__)
