@@ -38,12 +38,12 @@ class Station(Producer):
         # replicas
         #
         #
-        topic_name = f"Message-Station-{station_name}" # TODO: Come up with a better topic name
+        topic_name = f"com.udacity.station.arrivals.v1" # TODO: Come up with a better topic name
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
             value_schema=Station.value_schema, # TODO: Uncomment once schema is defined
-            num_partitions=1,
+            num_partitions=3,
             num_replicas=1,
         )
 
@@ -67,7 +67,7 @@ class Station(Producer):
         try:
             self.producer.produce(
             topic=self.topic_name,
-            key={"timestamp": self.time_millis()}, # <-- BUG: forget the schema for value!
+            key={"timestamp": self.time_millis()},
             value={
                 # TODO: Configure this
                 "station_id": self.station_id,

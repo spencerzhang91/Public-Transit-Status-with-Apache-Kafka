@@ -38,10 +38,10 @@ class Turnstile(Producer):
         #
         #
         super().__init__(
-            f"Message-Turnstile-{station_name}", # TODO: Come up with a better topic name
+            f"com.udacity.station.turnstile.v1", # TODO: Come up with a better topic name
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema, # TODO: Uncomment once schema is defined
-            num_partitions=1,
+            num_partitions=3,
             num_replicas=1,
         )
         self.station = station
@@ -57,13 +57,19 @@ class Turnstile(Producer):
         # of entries that were calculated
         #
         #
+        logger.debug(f"Passenger count :{num_entries} on {self.station.name} | {timestamp.isoformat()}")
+
         for _ in range(num_entries):
-            self.producer.produce(
-                topic=self.topic_name,
-                key={"timestamp": self.time_millis()},
-                value={
-                    "station_id": self.station.station_id,
-                    "station_name": self.station.name,
-                    "line": self.station.color
-                }
-            )
+            try:
+                self.producer.produce(
+                    topic=self.topic_name,
+                    key={"timestamp": self.time_millis()},
+                    value={
+                        "station_id": self.station.station_id,
+                        "station_name": self.station.name,
+                        "line": self.station.color.name
+                    }
+                )
+            except Exception as e:
+                logger.fatal(e)
+                raise e

@@ -8,8 +8,8 @@ import requests
 logger = logging.getLogger(__name__)
 
 
-KAFKA_CONNECT_URL = "http://localhost:8083"
-CONNECTOR_NAME = "CONNECTOR_STATIONS"
+KAFKA_CONNECT_URL = "http://kafka-connect:8083/connectors"
+CONNECTOR_NAME = "stations"
 
 def configure_connector():
     """Starts and configures the Kafka Connect connector"""
@@ -25,9 +25,9 @@ def configure_connector():
     # using incrementing mode, with `stop_id` as the incrementing column name.
     # Make sure to think about what an appropriate topic prefix would be, and how frequently Kafka
     # Connect should run this connector (hint: not very often!)
-    logger.info("connector code not completed skipping connector creation")
+    # logger.info("connector code not completed skipping connector creation")
     resp = requests.post(
-       KAFKA_CONNECT_URL + "/connectors",
+       KAFKA_CONNECT_URL,
        headers={"Content-Type": "application/json"},
        data=json.dumps({
            "name": CONNECTOR_NAME,
@@ -42,11 +42,11 @@ def configure_connector():
                "connection.url": "jdbc:postgresql://postgres:5432/cta",
                "connection.user": "cta_admin",
                "connection.password": "chicago",
-               "table.whitelist": "stations",
+               "table.whitelist": CONNECTOR_NAME,
                "mode": "incrementing",
                "incrementing.column.name": "stop_id",
-               "topic.prefix": "connect.psql.01.",
-               "poll.interval.ms": "10000",
+               "topic.prefix": "com.udacity.",
+               "poll.interval.ms": 1000 * 60 * 15,
            }
        }),
     )

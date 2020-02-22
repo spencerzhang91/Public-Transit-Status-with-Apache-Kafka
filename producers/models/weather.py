@@ -21,7 +21,7 @@ class Weather(Producer):
         "status", "sunny partly_cloudy cloudy windy precipitation", start=0
     )
 
-    rest_proxy_url = "http://localhost:8082"
+    rest_proxy_url = "http://rest-proxy:8082"
 
     key_schema = None
     value_schema = None
@@ -37,9 +37,11 @@ class Weather(Producer):
         #
         #
         super().__init__(
-            "Message-Weather",  # TODO: Come up with a better topic name
+            "com.udacity.weather.v1",  # TODO: Come up with a better topic name
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
+            num_partitions=1,
+            num_replicas=1
         )
 
         self.status = Weather.status.sunny
@@ -96,8 +98,8 @@ class Weather(Producer):
                    # TODO: Provide key schema, value schema, and records
                    #
                    #
-                   "key_schema": self.key_schema,
-                   "value_schema": self.value_schema,
+                   "key_schema": json.dumps(self.key_schema),
+                   "value_schema": json.dumps(self.value_schema),
                    "records": [
                        {
                            "key": self.time_millis(),

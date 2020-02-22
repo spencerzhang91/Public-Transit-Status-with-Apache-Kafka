@@ -35,21 +35,20 @@ app = faust.App("stations-stream", broker="kafka://localhost:9092", store="memor
 
 # TODO: Define the input Kafka Topic. Hint: What topic did Kafka Connect output to?
 topic = app.topic(
-    "connect.psql.01.stations",
-    value_type=Station,
-    partitions=1)
+    "com.udacity.stations",
+    value_type=Station)
 
 # TODO: Define the output Kafka Topic
 out_topic = app.topic(
-    "connect.psql.01.stations.sanitized",
+    "com.udacity.staions.table",
     value_type=TransformedStation,
     partitions=1)
 
 
 # TODO: Define a Faust Table
 table = app.Table(
-   "stations_summary",
-   default=int,  # <-- not sure if it is correct.
+   "com.udacity.stations.table.v1",
+   default=TransformedStation,  # <-- not sure if it is correct.
    partitions=1,
    changelog_topic=out_topic,
 )
@@ -63,13 +62,13 @@ table = app.Table(
 @app.agent(topic)
 async def station_event(incoming_events):
     async for event in incoming_events:
-        sanitized = TransformedStation(
+        transformed = TransformedStation(
             station_id = event.station_id,
             station_name = event.station_name,
             order = event.order,
-            line = decide_color(event.color)
+            line = decide_color(event)
         )
-        await out_topic.send(value=sanitized)
+        table[event.station_id] = transformed
 
 
 def decide_color(event):
@@ -80,6 +79,9 @@ def decide_color(event):
         return "blue"
     elif event.green:
         return "green"
+    else:
+        logger.info(f"No line color for {event.station_id}")
+        return None
 
 
 if __name__ == "__main__":

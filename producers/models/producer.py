@@ -5,7 +5,7 @@ import time
 
 from confluent_kafka import avro
 from confluent_kafka.admin import AdminClient, NewTopic
-from confluent_kafka.avro import AvroProducer, CachedSchemaRegistryClient
+from confluent_kafka.avro import AvroProducer
 
 logger = logging.getLogger(__name__)
 
@@ -35,16 +35,8 @@ class Producer:
         # and use the Host URL for Kafka and Schema Registry!
         #
         self.broker_properties = {
-            "public_transit_status": "http://localhost:8888",
-            "landoop_kafka_connect_ui": "http://localhost:8084",
-            "landoop_kafka_topics_ui": "http://localhost:8085",
-            "landoop_schema_registry_ui": "http://localhost:8086",
-            "kafka": "PLAINTEXT://localhost:9092, PLAINTEXT://localhost:9092, PLAINTEXT://localhost:9094",
-            "rest_proxy": "http://localhost:8082",
-            "schema_registry": "http://localhost:8081",
-            "kafka_connect": "http://kafka-connect:8083",
-            "ksql": "http://localhost:8088",
-            "postgresql": "jdbc:postgresql://localhost:5432/cta"
+            "kafka": "PLAINTEXT://kafka0:9092",
+            "schema_registry": "http://schema-registry:8081/",
         }
 
         # If the topic does not already exist, try to create it
@@ -56,20 +48,11 @@ class Producer:
         self.producer = AvroProducer(
             {
                 "bootstrap.servers": self.broker_properties["kafka"],
-                # "schema.registry.url": self.broker_properties["schema_registry"],
-                # "compression.type": "lz4"
+                "schema.registry.url": self.broker_properties["schema_registry"]
             },
             default_key_schema=self.key_schema,
-            default_value_schema=self.value_schema,
-            schema_registry=CachedSchemaRegistryClient(
-                {"url": self.broker_properties["schema_registry"]}
-              )  # <-- bug is here!
+            default_value_schema=self.value_schema
         )
-
-        # About the bug above: Be careful that if to specify the schema registry, it could be done
-        # in two ways:
-        # 1. Configure it in the config json (first param of AvroProducer class)
-        # 2. Use a CachedSchemaRegistryClient class like in exercise3.4.py
 
 
     def create_topic(self):
@@ -78,22 +61,32 @@ class Producer:
         # TODO: Write code that creates the topic for this producer if it does not already exist on
         # the Kafka Broker.
 
-        # Configure the AdminClient with `bootstrap.servers`
-        #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.AdminClient
         client = AdminClient({"bootstrap.servers": self.broker_properties["kafka"]})
+        topic_exists = self.chech_topic_exists(client, self.topic_name)
+        
+        if topic_exists:
+            logger.info(f"Topic {self.topic_name} already exist. Creation aborted.")
+            return
 
-        # Create a NewTopic object. Don't forget to set partitions and replication factor to 1!
-        #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.NewTopic
+        logger.info(f"Creating topic: {self.topic_name}")
         topic = NewTopic(self.topic_name, num_partitions=self.num_partitions, replication_factor=self.num_replicas)
 
         # Using `client`, create the topic
         #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.AdminClient.create_topics
-        try:
-            client.create_topics([topic])
-        except Exception as e:
-            logger.info(f"Exception {e} occured. Topic creation failed.")
-        else:
-            logger.info(f"Topic {self.topic_name} created!")
+        futures = client.create_topics([
+            NewTopic(
+                topic=self.topic_name,
+                num_partitions=self.num_partitions,
+                replication_factor=self.num_replicas
+            )
+        ])
+
+        for topic, future in futures.items():
+            try:
+                future.result()
+                logger.info("topic created")
+            except Exception as e:
+                logger.fatal("failed to create topic %s: %s", topic, e)
 
 
     def close(self):
@@ -101,19 +94,20 @@ class Producer:
         #
         # TODO: Write cleanup code for the Producer here
         #
-        try:
-            # clean up logic here
-            self.producer.flush()
-            client = AdminClient({"bootstrap.servers": self.broker_properties["kafka"]})
-            client.delete_topic([self.topic_name])
-            Producer.existing_topics.remove(self.topic_name)
-
-        except Exception as e:
-            logger.info(f"Producer closing failed due to exeption {e}.")
-        else:
-            logger.info(f"Producer of topic name {self.topic_name} completed.")
+        if self.producer is None:
+            return
+        logger.debug("Closing producer...")
+        self.producer.flush()
 
 
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""
         return int(round(time.time() * 1000))
+
+    
+    def chech_topic_exists(self, client, topic_name):
+        """Checks if topic already exists."""
+        topic_metadata = client.list_topics()
+        topics = topic_metadata.topics
+        return topic_name in topics
+

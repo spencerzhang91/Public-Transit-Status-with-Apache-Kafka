@@ -10,7 +10,7 @@ import topic_check
 logger = logging.getLogger(__name__)
 
 
-KSQL_URL = "http://localhost:8088"
+KSQL_URL = "http://ksql:8088"
 
 #
 # TODO: Complete the following KSQL statements.
@@ -27,7 +27,7 @@ CREATE TABLE turnstile (
     station_name STRING,
     line STRING
 ) WITH (
-    KAFKA_TOPIC='turnstile',
+    KAFKA_TOPIC='com.udacity.station.turnstile.v1',
     VALUE_FORMAT='AVRO',
     KEY='station_id'
 );
