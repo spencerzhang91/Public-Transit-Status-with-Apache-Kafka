@@ -37,7 +37,7 @@ class Weather(Producer):
         #
         #
         super().__init__(
-            "Message.Weather",  # TODO: Come up with a better topic name
+            "Message-Weather",  # TODO: Come up with a better topic name
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
         )
