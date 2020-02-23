@@ -66,9 +66,9 @@ class KafkaConsumer:
         for partition in partitions:
             if self.offset_earliest is True:
                 partition.offset = OFFSET_BEGINNING
-        
-        consumer.assign(partitions)
         logger.info("partitions assigned for %s", self.topic_name_pattern)
+        consumer.assign(partitions)
+        
 
     async def consume(self):
         """Asynchronously consumes data from kafka topic"""

@@ -48,7 +48,7 @@ out_topic = app.topic(
 # TODO: Define a Faust Table
 table = app.Table(
    "com.udacity.stations.table.v1",
-   default=TransformedStation,  # <-- not sure if it is correct.
+   default=TransformedStation,
    partitions=1,
    changelog_topic=out_topic,
 )
@@ -80,7 +80,7 @@ def decide_color(event):
     elif event.green:
         return "green"
     else:
-        logger.info(f"No line color for {event.station_id}")
+        logger.warning(f"No line color for {event.station_id}")
         return None
 
 

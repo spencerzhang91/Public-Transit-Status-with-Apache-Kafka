@@ -15,11 +15,6 @@ class Station(Producer):
     """Defines a single station"""
 
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_key.json")
-
-    #
-    # TODO: Define this value schema in `schemas/station_value.json, then uncomment the below 
-    # # <- should be arrivale_value.json ? ->
-    #
     value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_value.json")
 
     def __init__(self, station_id, name, color, direction_a=None, direction_b=None):
@@ -32,18 +27,13 @@ class Station(Producer):
             .replace("'", "")
         )
 
-        #
-        #
-        # TODO: Complete the below by deciding on a topic name, number of partitions, and number of
-        # replicas
-        #
-        #
-        topic_name = f"com.udacity.station.arrivals.v1" # TODO: Come up with a better topic name
+
+        topic_name = f"com.udacity.station.arrivals" # TODO: Come up with a better topic name
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
             value_schema=Station.value_schema, # TODO: Uncomment once schema is defined
-            num_partitions=3,
+            num_partitions=5,
             num_replicas=1,
         )
 

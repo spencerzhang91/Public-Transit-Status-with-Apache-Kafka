@@ -46,6 +46,7 @@ WITH (
 def execute_statement():
     """Executes the KSQL statement against the KSQL API"""
     if topic_check.topic_exists("TURNSTILE_SUMMARY") is True:
+        logging.warning("Topic already exist!")
         return
 
     logging.debug("executing ksql statement...")

@@ -42,7 +42,7 @@ def configure_connector():
                "connection.url": "jdbc:postgresql://postgres:5432/cta",
                "connection.user": "cta_admin",
                "connection.password": "chicago",
-               "table.whitelist": CONNECTOR_NAME,
+               "table.whitelist": "stations",
                "mode": "incrementing",
                "incrementing.column.name": "stop_id",
                "topic.prefix": "com.udacity.",
