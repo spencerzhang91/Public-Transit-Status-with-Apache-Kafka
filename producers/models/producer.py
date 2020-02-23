@@ -33,9 +33,14 @@ class Producer:
 
         # Configure the broker properties below. Make sure to reference the project README
         # and use the Host URL for Kafka and Schema Registry!
+        # self.broker_properties = {
+        #     "bootstrap.servers": "PLAINTEXT://kafka0:9092",
+        #     "schema.registry.url": "http://schema-registry:8081/",
+        # }
+
         self.broker_properties = {
-            "bootstrap.servers": "PLAINTEXT://kafka0:9092",
-            "schema.registry.url": "http://schema-registry:8081/",
+            "bootstrap.servers": "PLAINTEXT://localhost:9092",
+            "schema.registry.url": "http://localhost:8081/",
         }
 
         # If the topic does not already exist, try to create it
@@ -49,6 +54,7 @@ class Producer:
             default_key_schema=self.key_schema,
             default_value_schema=self.value_schema
         )
+        logger.debug("AvroProducer created!")
 
 
     def create_topic(self):
@@ -56,10 +62,11 @@ class Producer:
         #
         # Creates the topic for this producer if it does not already exist on
         # the Kafka Broker.
-        logger.info(f"Beginning topic creation for {self.topic.name}")
+        logger.info(f"Beginning topic creation for {self.topic_name}")
         client = AdminClient(
             {"bootstrap.servers": self.broker_properties["bootstrap.servers"]}
         )
+
         topic_exists = self.chech_topic_exists(client, self.topic_name)
         
         if topic_exists:
@@ -79,6 +86,7 @@ class Producer:
                 )
             ]
         )
+        logger.debug("client.create_topics method called...")
 
         for topic, future in futures.items():
             try:
@@ -105,7 +113,8 @@ class Producer:
     
     def chech_topic_exists(self, client, topic_name):
         """Checks if topic already exists."""
-        topic_metadata = client.list_topics()
-        topics = topic_metadata.topics
-        return topic_name in topics
+        logger.debug(f"Topic {self.topic_name} checking...")
+        # topic_metadata = client.list_topics()
+        # topics = topic_metadata.topics
+        return topic_name in Producer.existing_topics
 

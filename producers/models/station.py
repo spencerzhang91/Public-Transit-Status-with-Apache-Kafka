@@ -68,8 +68,8 @@ class Station(Producer):
                 "prev_station_id": prev_station_id,
                 "prev_direction": prev_direction
             },
-            key_schema=self.key_schema,
-            value_schema=self.value_schema
+            key_schema=Station.key_schema,
+            value_schema=Station.value_schema
             )
         except Exception as e:
             logger.fatal(e)
